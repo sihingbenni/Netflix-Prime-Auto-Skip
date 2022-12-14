@@ -146,6 +146,7 @@ if (isVideo || isNetflix) {
           button.click();
           console.log("intro skipped", button);
           setTimeout(function () {
+            // NetflixGoBackButton(video, time, video.currentTime);
             addIntroTimeSkipped(time, video.currentTime);
           }, 600);
           return;
@@ -153,6 +154,100 @@ if (isVideo || isNetflix) {
       }
     }
   }
+  // this is the NetflixGoBackButton
+
+  // uiEventsHappening = 0;
+  // function showControls() {
+  //   uiEventsHappening += 1;
+  //   var scrubber = $("#scrubber-component");
+  //   var eventOptions = {
+  //     bubbles: true,
+  //     button: 0,
+  //     currentTarget: scrubber[0],
+  //   };
+  //   scrubber[0].dispatchEvent(new MouseEvent("mousemove", eventOptions));
+  //   return delay(10)().then(function () {
+  //     uiEventsHappening -= 1;
+  //   });
+  // }
+  // showControls();
+  // function seek(milliseconds) {
+  //   uiEventsHappening += 1;
+  //   var eventOptions, scrubber;
+  //   return showControls()
+  //     .then(function () {
+  //       // compute the parameters for the mouse events
+  //       scrubber = $("#scrubber-component");
+  //       var factor = milliseconds / getDuration();
+  //       var mouseX = scrubber.offset().left + Math.round(scrubber.width() * factor); // relative to the document
+  //       var mouseY = scrubber.offset().top + scrubber.height() / 2; // relative to the document
+  //       eventOptions = {
+  //         bubbles: true,
+  //         button: 0,
+  //         screenX: mouseX - $(window).scrollLeft(),
+  //         screenY: mouseY - $(window).scrollTop(),
+  //         clientX: mouseX - $(window).scrollLeft(),
+  //         clientY: mouseY - $(window).scrollTop(),
+  //         offsetX: mouseX - scrubber.offset().left,
+  //         offsetY: mouseY - scrubber.offset().top,
+  //         pageX: mouseX,
+  //         pageY: mouseY,
+  //         currentTarget: scrubber[0],
+  //       };
+
+  //       // make the "trickplay preview" show up
+  //       scrubber[0].dispatchEvent(new MouseEvent("mouseover", eventOptions));
+  //     })
+  //     .then(delay(10))
+  //     .then(function () {
+  //       // simulate a click on the scrubber
+  //       scrubber[0].dispatchEvent(new MouseEvent("mousedown", eventOptions));
+  //       scrubber[0].dispatchEvent(new MouseEvent("mouseup", eventOptions));
+  //       scrubber[0].dispatchEvent(new MouseEvent("mouseout", eventOptions));
+  //     })
+  //     .then(delay(1))
+  //     .then(hideControls)
+  //     .then(function () {
+  //       uiEventsHappening -= 1;
+  //     });
+  // }
+
+  // reverseButton = false;
+  // function NetflixGoBackButton(video, startTime, endTime) {
+  //   if (!reverseButton) {
+  //     reverseButton = true;
+  //     // go back button
+  //     const button = document.createElement("button");
+  //     button.setAttribute("class", "button-primary watch-video--skip-content-button medium hasLabel");
+  //     button.type = "button";
+  //     button.setAttribute("data-uia", "reverse-button");
+  //     button.style = "position: absolute; left: 85%; bottom: 16%; color: #181818; border-radius: 5px;padding: 0.5rem 1rem;";
+  //     const span = document.createElement("span");
+  //     span.setAttribute("class", "ltr-10qgxi");
+  //     span.textContent = "Watch skipped ?";
+  //     button.appendChild(span);
+  //     document.querySelector('[data-uia="watch-video-player-view-minimized"]').appendChild(button);
+  //     buttonInHTML = document.querySelector('[data-uia="reverse-button"]');
+  //     function goBack() {
+  //       showControls();
+  //       video.currentTime = startTime;
+  //       buttonInHTML.remove();
+  //       console.log("stopped observing| Intro");
+  //       NetflixSkipIntroObserver.disconnect();
+  //       waitTime = endTime - startTime + 2;
+  //       // console.log("waiting for:", waitTime);
+  //       setTimeout(function () {
+  //         console.log("restarted observing| Intro");
+  //         NetflixSkipIntroObserver.observe(document, AmazonSkipIntroConfig);
+  //       }, waitTime * 1000);
+  //     }
+  //     buttonInHTML.addEventListener("click", goBack);
+  //     setTimeout(() => {
+  //       buttonInHTML.remove();
+  //       reverseButton = false;
+  //     }, 5000);
+  //   }
+  // }
 
   const NetflixSkipRecapObserver = new MutationObserver(Netflix_Recap);
   function Netflix_Recap(mutations, observer) {
@@ -199,7 +294,6 @@ if (isVideo || isNetflix) {
   }
 
   // Amazon Observers
-
   const AmazonSkipIntroConfig = { attributes: true, attributeFilter: [".skipelement"], subtree: true, childList: true, attributeOldValue: false };
   // const AmazonSkipIntro = new RegExp("skipelement", "i");
   const AmazonSkipIntroObserver = new MutationObserver(Amazon_Intro);
@@ -225,10 +319,10 @@ if (isVideo || isNetflix) {
       const button = document.createElement("button");
       button.style = "padding: 0px 22px; line-height: normal; min-width: 0px";
       button.setAttribute("class", "fqye4e3 f1ly7q5u fk9c3ap fz9ydgy f1xrlb00 f1hy0e6n fgbpje3 f1uteees f1h2a8xb  f1cg7427 fiqc9rt fg426ew f1ekwadg");
-      button.setAttribute("data-uia", "reverse-intro-button");
-      button.textContent = "watch skipped ?";
+      button.setAttribute("data-uia", "reverse-button");
+      button.textContent = "Watch skipped ?";
       document.querySelector(".f18oq18q.f6suwnu.fhxjtbc.f1ngx5al").appendChild(button);
-      buttonInHTML = document.querySelector('[data-uia="reverse-intro-button"]');
+      buttonInHTML = document.querySelector('[data-uia="reverse-button"]');
       function goBack() {
         video.currentTime = startTime;
         buttonInHTML.remove();
