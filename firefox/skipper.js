@@ -141,7 +141,7 @@ if (isVideo || isNetflix) {
   function Netflix_Observer(mutations, observer) {
     console.log("Netflix_Observer");
     let button;
-    let video = document.querySelectorAll("video")?.[0];
+    let video = document.querySelector("video");
     const time = video?.currentTime;
     if (settings.Netflix?.skipIntro === undefined || settings.Netflix?.skipIntro) button = document.querySelector('[data-uia="player-skip-intro"]');
     if (button) {
@@ -151,7 +151,7 @@ if (isVideo || isNetflix) {
       }, 600);
       return;
     }
-    if (settings.Netflix?.skipRecap === undefined || settings.Netflix.skipRecap)
+    if (settings.Netflix?.skipRecap === undefined || settings.Netflix?.skipRecap)
       button = document.querySelector('[data-uia="player-skip-recap"]') || document.querySelector('[data-uia="player-skip-preplay"]');
     if (button) {
       button.click();
