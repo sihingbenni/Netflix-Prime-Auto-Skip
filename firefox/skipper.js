@@ -42,10 +42,7 @@ if (isVideo || isNetflix) {
     } else {
       if (isNetflix) {
         // start Observers depending on the settings
-        if (settings.Netflix?.skipIntro) startNetflixSkipIntroObserver();
-        if (settings.Netflix?.skipRecap) startNetflixSkipRecapObserver();
-        if (settings.Netflix?.skipCredits) startNetflixSkipCreditsObserver();
-        if (settings.Netflix?.skipBlocked) startNetflixSkipBlockedObserver();
+        NetflixObserver.observe(document, NetflixConfig);
         if (settings.Netflix?.NetflixAds) startNetflixAdTimeout();
       } else {
         if (settings.Amazon?.skipIntro) startAmazonSkipIntroObserver();
@@ -90,10 +87,6 @@ if (isVideo || isNetflix) {
         console.log(key, "Old value:", oldValue, ", new value:", newValue);
         if (isNetflix) {
           // if value is changed then check if it is enabled or disabled
-          if (oldValue === undefined || newValue.Netflix.skipIntro !== oldValue.Netflix.skipIntro) startNetflixSkipIntroObserver();
-          if (oldValue === undefined || newValue.Netflix.skipRecap !== oldValue.Netflix.skipRecap) startNetflixSkipRecapObserver();
-          if (oldValue === undefined || newValue.Netflix.skipCredits !== oldValue.Netflix.skipCredits) startNetflixSkipCreditsObserver();
-          if (oldValue === undefined || newValue.Netflix.skipBlocked !== oldValue.Netflix.skipBlocked) startNetflixSkipBlockedObserver();
           if (oldValue === undefined || newValue.Netflix.NetflixAds !== oldValue.Netflix.NetflixAds) startNetflixAdTimeout();
         } else {
           if (oldValue === undefined || newValue.Amazon.skipIntro !== oldValue.Amazon.skipIntro) startAmazonSkipIntroObserver();
@@ -144,66 +137,36 @@ if (isVideo || isNetflix) {
   const config = { attributes: true, childList: true, subtree: true };
   // Netflix Observers
   const NetflixConfig = { attributes: true, attributeFilter: ["data-uia"], subtree: true, childList: true, attributeOldValue: false };
-  const NetflixSkipIntroObserver = new MutationObserver(Netflix_intro);
-  function Netflix_intro(mutations, observer) {
-    for (let mutation of mutations) {
-      for (let node of mutation.addedNodes) {
-        let button = node.querySelector('[data-uia="player-skip-intro"]');
-        if (button) {
-          let video = document.querySelectorAll("video")[0];
-          const time = video.currentTime;
-          button.click();
-          console.log("intro skipped", button);
-          setTimeout(function () {
-            addIntroTimeSkipped(time, video.currentTime);
-          }, 600);
-          return;
-        }
-      }
-    }
-  }
-
-  const NetflixSkipRecapObserver = new MutationObserver(Netflix_Recap);
-  function Netflix_Recap(mutations, observer) {
-    for (let mutation of mutations) {
-      for (let node of mutation.addedNodes) {
-        let button = node.querySelector('[data-uia="player-skip-recap"]') || node.querySelector('[data-uia="player-skip-preplay"]');
-        if (button) {
-          let video = document.querySelectorAll("video")[0];
-          const time = video.currentTime;
-          button.click();
-          console.log("Recap skipped", button);
-          setTimeout(function () {
-            addRecapTimeSkipped(time, video.currentTime);
-          }, 600);
-          return;
-        }
-      }
-    }
-  }
-
-  const NetflixSkipCreditsObserver = new MutationObserver(Netflix_Credits);
-  function Netflix_Credits(mutations, observer) {
-    let button = document.querySelector('[data-uia="next-episode-seamless-button"]');
+  const NetflixObserver = new MutationObserver(Netflix_Observer);
+  function Netflix_Observer(mutations, observer) {
+    console.log("Netflix_Observer");
+    let button;
+    let video = document.querySelectorAll("video")?.[0];
+    const time = video?.currentTime;
+    if (settings.Netflix?.skipIntro === undefined || settings.Netflix?.skipIntro) button = document.querySelector('[data-uia="player-skip-intro"]');
     if (button) {
       button.click();
-      console.log("Credits skipped", button);
-      increaseBadge();
+      setTimeout(function () {
+        addIntroTimeSkipped(time, video.currentTime);
+      }, 600);
+      return;
     }
-  }
+    if (settings.Netflix?.skipRecap === undefined || settings.Netflix.skipRecap)
+      button = document.querySelector('[data-uia="player-skip-recap"]') || document.querySelector('[data-uia="player-skip-preplay"]');
+    if (button) {
+      button.click();
+      setTimeout(function () {
+        addRecapTimeSkipped(time, video.currentTime);
+      }, 600);
+      return;
+    }
 
-  const NetflixSkipBlockedObserver = new MutationObserver(Netflix_Blocked);
-  function Netflix_Blocked(mutations, observer) {
-    for (let mutation of mutations) {
-      for (let node of mutation.addedNodes) {
-        let button = node.querySelector('[data-uia="interrupt-autoplay-continue"]');
-        if (button) {
-          button.click();
-          console.log("Blocked skipped", button);
-          increaseBadge();
-          return;
-        }
-      }
+    if (settings.Netflix?.skipCredits === undefined || settings.Netflix?.skipCredits) button = document.querySelector('[data-uia="next-episode-seamless-button"]');
+    if (settings.Netflix?.skipBlocked === undefined || settings.Netflix?.skipBlocked) button = document.querySelector('[data-uia="interrupt-autoplay-continue"]');
+    if (button) {
+      button.click();
+      increaseBadge();
+      return;
     }
   }
 
@@ -478,72 +441,6 @@ if (isVideo || isNetflix) {
   }
 
   // start/stop the observers depending on settings
-  async function startNetflixSkipIntroObserver() {
-    if (settings.Netflix.skipIntro === undefined || settings.Netflix.skipIntro) {
-      console.log("started observing| intro");
-      let button = document.querySelector('[data-uia="player-skip-intro"]');
-      if (button) {
-        let video = document.querySelectorAll("video")[0];
-        const time = video.currentTime;
-        button.click();
-        console.log("intro skipped", button);
-        setTimeout(function () {
-          addIntroTimeSkipped(time, video.currentTime);
-        }, 600);
-      }
-      NetflixSkipIntroObserver.observe(document, NetflixConfig);
-    } else {
-      console.log("stopped observing| intro");
-      NetflixSkipIntroObserver.disconnect();
-    }
-  }
-  async function startNetflixSkipRecapObserver() {
-    if (settings.Netflix.skipRecap === undefined || settings.Netflix.skipRecap) {
-      console.log("started observing| Recap");
-      let button = document.querySelector('[data-uia="player-skip-recap"]') || document.querySelector('[data-uia="player-skip-preplay"]');
-      if (button) {
-        let video = document.querySelectorAll("video")[0];
-        const time = video.currentTime;
-        button.click();
-        console.log("Recap skipped", button);
-        setTimeout(function () {
-          addRecapTimeSkipped(time, video.currentTime);
-        }, 600);
-      }
-      NetflixSkipRecapObserver.observe(document, NetflixConfig);
-    } else {
-      console.log("stopped observing| Recap");
-      NetflixSkipRecapObserver.disconnect();
-    }
-  }
-  async function startNetflixSkipCreditsObserver() {
-    if (settings.Netflix.skipCredits === undefined || settings.Netflix.skipCredits) {
-      console.log("started observing| Credits");
-      let button = document.querySelector('[data-uia="next-episode-seamless-button"]');
-      if (button) {
-        button.click();
-        console.log("Credits skipped", button);
-      }
-      NetflixSkipCreditsObserver.observe(document, NetflixConfig);
-    } else {
-      console.log("stopped observing| Credits");
-      NetflixSkipCreditsObserver.disconnect();
-    }
-  }
-  async function startNetflixSkipBlockedObserver() {
-    if (settings.Netflix.skipBlocked === undefined || settings.Netflix.skipBlocked) {
-      console.log("started observing| Blocked");
-      let button = document.querySelector('[data-uia="interrupt-autoplay-continue"]');
-      if (button) {
-        button.click();
-        console.log("Blocked skipped", button);
-      }
-      NetflixSkipBlockedObserver.observe(document, NetflixConfig);
-    } else {
-      console.log("stopped observing| Blocked");
-      NetflixSkipBlockedObserver.disconnect();
-    }
-  }
   async function startNetflixAdTimeout() {
     if (settings.Netflix.NetflixAds === undefined || settings.Netflix.NetflixAds) {
       console.log("started observing| Ad");
