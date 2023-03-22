@@ -149,6 +149,7 @@ if (isVideo || isNetflix) {
         addIntroTimeSkipped(time, video.currentTime);
       }, 600);
     }
+    // preplay castlevania
     if (settings.Netflix?.skipRecap === undefined || settings.Netflix?.skipRecap)
       button = document.querySelector('[data-uia="player-skip-recap"]') || document.querySelector('[data-uia="player-skip-preplay"]');
     if (button) {
