@@ -139,7 +139,6 @@ if (isVideo || isNetflix) {
   const NetflixConfig = { attributes: true, attributeFilter: ["data-uia"], subtree: true, childList: true, attributeOldValue: false };
   const NetflixObserver = new MutationObserver(Netflix_Observer);
   function Netflix_Observer(mutations, observer) {
-    console.log("Netflix_Observer");
     let button;
     let video = document.querySelector("video");
     const time = video?.currentTime;
@@ -149,7 +148,6 @@ if (isVideo || isNetflix) {
       setTimeout(function () {
         addIntroTimeSkipped(time, video.currentTime);
       }, 600);
-      return;
     }
     if (settings.Netflix?.skipRecap === undefined || settings.Netflix?.skipRecap)
       button = document.querySelector('[data-uia="player-skip-recap"]') || document.querySelector('[data-uia="player-skip-preplay"]');
@@ -158,15 +156,16 @@ if (isVideo || isNetflix) {
       setTimeout(function () {
         addRecapTimeSkipped(time, video.currentTime);
       }, 600);
-      return;
     }
-
     if (settings.Netflix?.skipCredits === undefined || settings.Netflix?.skipCredits) button = document.querySelector('[data-uia="next-episode-seamless-button"]');
+    if (button) {
+      button.click();
+      increaseBadge();
+    }
     if (settings.Netflix?.skipBlocked === undefined || settings.Netflix?.skipBlocked) button = document.querySelector('[data-uia="interrupt-autoplay-continue"]');
     if (button) {
       button.click();
       increaseBadge();
-      return;
     }
   }
 
