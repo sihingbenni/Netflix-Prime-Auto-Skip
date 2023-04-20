@@ -106,6 +106,24 @@ function setCheckboxesToSettings() {
   button = document.querySelector("#VideoFullScreen");
   if (button) button.checked = settings?.Video.playOnFullScreen;
 
+  // -------------      Selectors        ---------------------------------------
+  button = document.querySelector("#SelectVideoIntro");
+  if (button) {
+    if (settings?.Amazon.skipIntro) {
+      if (settings?.Netflix.skipIntro) {
+        button.value = "Both";
+      } else {
+        button.value = "Amazon";
+      }
+    } else {
+      if (settings?.Netflix.skipIntro) {
+        button.value = "Netflix";
+      } else {
+        button.value = "None";
+      }
+    }
+  }
+
   //  -------------      Amazon        ---------------------------------------
   button = document.querySelector("#AmazonSkips");
   if (button) button.checked = settings?.Amazon.skipAd && settings?.Amazon.speedSlider && settings?.Amazon.filterPaid;
@@ -259,6 +277,24 @@ function listenForClicks() {
       settings.Video.playOnFullScreen = !settings.Video.playOnFullScreen;
       setSettings("playOnFullScreen");
     }
+    // Selectors
+    else if (e.target.id === "SelectIntroBoth") {
+      settings.Amazon.skipIntro = settings.Netflix.skipIntro = true;
+      setSettings("VideoIntro");
+    } else if (e.target.id === "SelectIntroAmazon") {
+      settings.Amazon.skipIntro = true;
+      settings.Netflix.skipIntro = false;
+      setSettings("NetflixIntro");
+    } else if (e.target.id === "SelectIntroNetflix") {
+      settings.Amazon.skipIntro = false;
+      settings.Netflix.skipIntro = true;
+      setSettings("AmazonIntro");
+    } else if (e.target.id === "SelectIntroNone") {
+      settings.Amazon.skipIntro = false;
+      settings.Netflix.skipIntro = true;
+      setSettings("No Intro");
+    }
+
     //  -------------      Amazon        ---------------------------------------
     else if (e.target.id === "AmazonSkips") {
       const AmazonSkips = !(settings.Amazon.skipAd && settings.Amazon.speedSlider && settings.Amazon.filterPaid);
