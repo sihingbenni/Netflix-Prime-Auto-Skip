@@ -123,6 +123,38 @@ function setCheckboxesToSettings() {
       }
     }
   }
+  button = document.querySelector("#SelectVideoCredits");
+  if (button) {
+    if (settings?.Amazon.skipCredits) {
+      if (settings?.Netflix.skipCredits) {
+        button.value = "Both";
+      } else {
+        button.value = "Amazon";
+      }
+    } else {
+      if (settings?.Netflix.skipCredits) {
+        button.value = "Netflix";
+      } else {
+        button.value = "None";
+      }
+    }
+  }
+  button = document.querySelector("#SelectVideoAds");
+  if (button) {
+    if (settings?.Amazon.blockFreevee) {
+      if (settings?.Netflix.NetflixAds) {
+        button.value = "Both";
+      } else {
+        button.value = "Amazon";
+      }
+    } else {
+      if (settings?.Netflix.NetflixAds) {
+        button.value = "Netflix";
+      } else {
+        button.value = "None";
+      }
+    }
+  }
 
   //  -------------      Amazon        ---------------------------------------
   button = document.querySelector("#AmazonSkips");
@@ -278,6 +310,7 @@ function listenForClicks() {
       setSettings("playOnFullScreen");
     }
     // Selectors
+    // Intro
     else if (e.target.id === "SelectIntroBoth") {
       settings.Amazon.skipIntro = settings.Netflix.skipIntro = true;
       setSettings("VideoIntro");
@@ -290,9 +323,40 @@ function listenForClicks() {
       settings.Netflix.skipIntro = true;
       setSettings("AmazonIntro");
     } else if (e.target.id === "SelectIntroNone") {
-      settings.Amazon.skipIntro = false;
-      settings.Netflix.skipIntro = true;
+      settings.Amazon.skipIntro = settings.Netflix.skipIntro = false;
       setSettings("No Intro");
+    }
+    // Credits
+    else if (e.target.id === "SelectCreditsBoth") {
+      settings.Amazon.skipCredits = settings.Netflix.skipCredits = true;
+      setSettings("VideoCredits");
+    } else if (e.target.id === "SelectCreditsAmazon") {
+      settings.Amazon.skipCredits = true;
+      settings.Netflix.skipCredits = false;
+      setSettings("NetflixCredits");
+    } else if (e.target.id === "SelectCreditsNetflix") {
+      settings.Amazon.skipCredits = false;
+      settings.Netflix.skipCredits = true;
+      setSettings("AmazonCredits");
+    } else if (e.target.id === "SelectCreditsNone") {
+      settings.Amazon.skipCredits = settings.Netflix.skipCredits = false;
+      setSettings("No Credits");
+    }
+    // Ads
+    else if (e.target.id === "SelectAdsBoth") {
+      settings.Amazon.blockFreevee = settings.Netflix.NetflixAds = true;
+      setSettings("VideoAd");
+    } else if (e.target.id === "SelectAdsAmazon") {
+      settings.Amazon.blockFreevee = true;
+      settings.Netflix.NetflixAds = false;
+      setSettings("NetflixAd");
+    } else if (e.target.id === "SelectAdsNetflix") {
+      settings.Amazon.blockFreevee = false;
+      settings.Netflix.NetflixAds = true;
+      setSettings("AmazonAd");
+    } else if (e.target.id === "SelectAdsNone") {
+      settings.Amazon.blockFreevee = settings.Netflix.NetflixAds = false;
+      setSettings("No Ads");
     }
 
     //  -------------      Amazon        ---------------------------------------
