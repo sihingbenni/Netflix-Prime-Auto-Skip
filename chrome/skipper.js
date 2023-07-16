@@ -362,11 +362,13 @@ if (isPrimeVideo || isNetflix || isDisney || isHotstar) {
           log("Ad skipped, length:", adLength, "s");
           settings.Statistics.NetflixAdTimeSkipped += adLength;
           increaseBadge();
+          video.muted = true;
           video.playbackRate = playBackRate;
         } else if (adLength && video.paused) {
           video.play();
         } else if (video.playbackRate == playBackRate && !adLength) {
           video.playbackRate = 1;
+          video.muted = false;
         }
       }
     }, 100);
