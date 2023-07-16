@@ -347,6 +347,7 @@ if (isPrimeVideo || isNetflix || isDisney || isHotstar) {
   }
 
   function Netflix_SkipAdInterval() {
+    let intervalTimeout = 100;
     let AdInterval = setInterval(() => {
       if (!settings.Netflix?.NetflixAds) {
         log("stopped observing| Ad");
@@ -364,14 +365,18 @@ if (isPrimeVideo || isNetflix || isDisney || isHotstar) {
           increaseBadge();
           video.muted = true;
           video.playbackRate = playBackRate;
+          // reduce the intervalTimeout
+          intervalTimeout = 10;
         } else if (adLength && video.paused) {
           video.play();
         } else if (video.playbackRate == playBackRate && !adLength) {
           video.playbackRate = 1;
           video.muted = false;
+          // reset the intervalTimeout
+          intervalTimeout = 100;
         }
       }
-    }, 100);
+    }, intervalTimeout);
   }
 
   const NetflixSpeedSliderConfig = { attributes: true, attributeFilter: ["video"], subtree: true, childList: true, attributeOldValue: false };
